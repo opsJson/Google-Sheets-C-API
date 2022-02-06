@@ -15,9 +15,6 @@ char *spreadsheets_values_read(char *spreadsheet_id, char *range) {
     
     r = hget_method("GET", url, "", &code, header);
 
-    free(url);
-    free(header);
-
     if (code == 401)
     {
         free(url);
@@ -29,10 +26,11 @@ char *spreadsheets_values_read(char *spreadsheet_id, char *range) {
 
     if (code != 200)
     {
-        free(r);
         fprintf(stderr, "ERROR: could not read %s:%s\n", spreadsheet_id, range);
-        return NULL;
     }
+
+    free(url);
+    free(header);
 
     return r;
 }
@@ -463,9 +461,10 @@ char *spreadsheets_create(char *name, char *width, char *height) {
     id = malloc(strlen(json[0].value) + 1);
     strcpy(id, json[0].value);
 
-    chopstring(id, 2, strlen(id)-2, id);
-    
+    chopstring(id, 2, strlen(id)-2, id);    
+
     json_free(json, c);
+
     free(data);
     free(header);
     free(r);
@@ -487,6 +486,9 @@ char *spreadsheets_get(char *spreadsheet_id) {
 
     if (code == 401)
     {
+        free(url);
+        free(header);
+        free(r);
         oauth_refresh();
         goto begin;
     }
@@ -497,9 +499,11 @@ char *spreadsheets_get(char *spreadsheet_id) {
     }
 
     free(url);
+    free(header);
     
     return r;
 }
+
 
 int main(void) {
 

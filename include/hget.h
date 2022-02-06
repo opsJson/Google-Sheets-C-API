@@ -57,6 +57,10 @@ char *get(char *url, char *data, int *statuscode, size_t count, ...) {
     //parse
     chopstring(response, indexOf(response, "\n\n", 0)+2, strlen(response), response);
 
+    //free
+    free(comando);
+    free(statusline);
+
     return response;
 }
 #define get(url, data, statuscode, ...) get(url, data, statuscode, counter(#__VA_ARGS__), __VA_ARGS__)
@@ -110,6 +114,10 @@ char *hget_method(char *method, char *url, char *data, int *statuscode, size_t c
 
     //parse
     chopstring(response, indexOf(response, "\n\n", 0)+2, strlen(response), response);
+
+    //free
+    free(comando);
+    free(statusline);
 
     return response;
 }
