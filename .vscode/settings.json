@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "oauth.h": "c",
+        "stdlib.h": "c",
+        "main.h": "c"
+    }
+}
