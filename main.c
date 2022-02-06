@@ -18,8 +18,6 @@ char *spreadsheets_values_read(char *spreadsheet_id, char *range) {
     free(url);
     free(header);
 
-    printf("statuscode: %i\n\n", code);
-
     if (code == 401)
     {
         free(url);
