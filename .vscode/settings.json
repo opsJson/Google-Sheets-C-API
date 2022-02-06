@@ -2,6 +2,7 @@
     "files.associations": {
         "oauth.h": "c",
         "stdlib.h": "c",
-        "main.h": "c"
+        "main.h": "c",
+        "json-parser.h": "c"
     }
 }
