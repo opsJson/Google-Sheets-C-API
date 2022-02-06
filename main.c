@@ -227,6 +227,59 @@ void spreadsheets_values_append(char *spreadsheet_id, char *range, size_t count,
 #define spreadsheets_values_append(spreadsheet_id, range, ...) \
     spreadsheets_values_append(spreadsheet_id, range, counter(#__VA_ARGS__), __VA_ARGS__)
 
+void spreadsheets_sheets_create(char *spreadsheet_id, char *name, char *width, char *height) {
+    char *url, *data, *header, *r;
+    int code;
+
+    begin:
+
+    makestr(url, "https://sheets.googleapis.com/v4/spreadsheets/%s:batchUpdate", spreadsheet_id);
+
+    makestr(header, "Authorization: Bearer %s", oauth_access());
+
+    makestr(data,
+    "{"
+        "\\\"requests\\\":"
+        "[{"
+            "\\\"addSheet\\\":"
+            "{"
+                "\\\"properties\\\":"
+                "{"
+                    "\\\"title\\\":\\\"%s\\\","
+                    "\\\"gridProperties\\\":"
+                    "{"
+                        "\\\"columnCount\\\":%s,"
+                        "\\\"rowCount\\\":%s"
+                    "}"
+                "}"
+            "}"
+        "}]"
+    "}",
+    name, width, height);
+
+    r = get(url, data, &code, header, "Content-Type: application/json");
+
+    if (code == 401)
+    {
+        free(url);
+        free(data);
+        free(header);
+        free(r);
+        oauth_refresh();
+        goto begin;
+    }
+
+    if (code != 200)
+    {
+        fprintf(stderr, "ERROR: could not create sheet at %s\n", spreadsheet_id);
+    }
+
+    free(url);
+    free(data);
+    free(header);
+    free(r);
+}
+
 void spreadsheets_sheets_delete(char *spreadsheet_id, char *sheets_id) {
     char *url, *data, *header, *r;
     int code;
@@ -449,7 +502,7 @@ char *spreadsheets_get(char *spreadsheet_id) {
 }
 
 int main(void) {
-    
+
 	oauth_credentials_set("client-id-here", "client-secret-here"); //grab at Google Cloud Console
 	
 	oauth_refresh_set("refresh-token-here");
