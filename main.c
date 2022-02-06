@@ -227,6 +227,100 @@ void spreadsheets_values_append(char *spreadsheet_id, char *range, size_t count,
 #define spreadsheets_values_append(spreadsheet_id, range, ...) \
     spreadsheets_values_append(spreadsheet_id, range, counter(#__VA_ARGS__), __VA_ARGS__)
 
+void spreadsheets_sheets_delete(char *spreadsheet_id, char *sheets_id) {
+    char *url, *data, *header, *r;
+    int code;
+
+    begin:
+
+    makestr(url, "https://sheets.googleapis.com/v4/spreadsheets/%s:batchUpdate", spreadsheet_id);
+
+    makestr(header, "Authorization: Bearer %s", oauth_access());
+
+	makestr(data,
+	"{"
+		"\\\"requests\\\":[{"
+			"\\\"deleteSheet\\\":"
+			"{"
+					"\\\"sheetId\\\":\\\"%s\\\""
+			"}"						
+		"}]"
+	"}",
+	sheets_id);
+
+    r = get(url, data, &code, header, "Content-Type: application/json");
+
+    if (code == 401)
+    {
+        free(url);
+        free(data);
+        free(header);
+        free(r);
+        oauth_refresh();
+        goto begin;
+    }
+
+    if (code != 200)
+    {
+        printf(r);
+        fprintf(stderr, "ERROR: could not delete %s:%s\n", spreadsheet_id, sheets_id);
+    }
+
+    free(url);
+    free(data);
+    free(header);
+    free(r);
+}
+
+void spreadsheets_sheets_edit_name(char *spreadsheet_id, char *sheets_id, char *new_name) {
+    char *url, *data, *header, *r;
+    int code;
+
+    begin:
+
+    makestr(url, "https://sheets.googleapis.com/v4/spreadsheets/%s:batchUpdate", spreadsheet_id);
+
+    makestr(header, "Authorization: Bearer %s", oauth_access());
+
+	makestr(data,
+	"{"
+		"\\\"requests\\\":[{"
+			"\\\"updateSheetProperties\\\":"
+			"{"
+				"\\\"properties\\\":"
+				"{"
+					"\\\"sheetId\\\":\\\"%s\\\""
+					",\\\"title\\\":\\\"%s\\\""
+				"},"
+				"\\\"fields\\\":\\\"title\\\""
+			"}"						
+		"}]"
+	"}",
+	sheets_id, new_name);
+
+    r = get(url, data, &code, header, "Content-Type: application/json");
+
+    if (code == 401)
+    {
+        free(url);
+        free(data);
+        free(header);
+        free(r);
+        oauth_refresh();
+        goto begin;
+    }
+
+    if (code != 200)
+    {
+        fprintf(stderr, "ERROR: could not edit name of %s:%s", spreadsheet_id, sheets_id);
+    }
+
+    free(url);
+    free(data);
+    free(header);
+    free(r);
+}
+
 void spreadsheets_sheets_copyTo(char *source_spreadsheet_id, char *source_sheet_id, char *dest_spreadsheet_id) {
     char *url, *data, *header, *r;
     int code;
@@ -355,7 +449,7 @@ char *spreadsheets_get(char *spreadsheet_id) {
 }
 
 int main(void) {
-
+    
 	oauth_credentials_set("client-id-here", "client-secret-here"); //grab at Google Cloud Console
 	
 	oauth_refresh_set("refresh-token-here");
