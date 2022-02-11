@@ -1,7 +1,6 @@
 #include "oauth.h"
 #include "../include/easy-string.h"
 #include "../include/makestr.h"
-#include "../include/hget.h"
 
 /*
 https://accounts.google.com/o/oauth2/auth?acess_type=offline&approval_prompt=auto&client_id=699363216020-2rqc120u9n2ftpe0721pjdp07bkfgm5s.apps.googleusercontent.com
@@ -32,7 +31,7 @@ void oauth_code(char *code)  {
 	"&redirect_uri=http://localhost",
 	code, CLIENT_ID, CLIENT_SECRET);
 	
-	r = get("https://accounts.google.com/o/oauth2/token", data, &statuscode, "");
+	r = curl_go("POST", "https://accounts.google.com/o/oauth2/token", data, &statuscode, "");
 	
 	printf("%s\n", r);
 	
@@ -61,7 +60,7 @@ void oauth_refresh() {
 	"&redirect_uri=http://localhost",
 	REFRESH_TOKEN, CLIENT_ID, CLIENT_SECRET);
 	
-	r = get("https://accounts.google.com/o/oauth2/token", data, &code, "");
+	r = curl_go("POST", "https://accounts.google.com/o/oauth2/token", data, &code, "");
 	
     if (code != 200)
     {

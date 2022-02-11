@@ -1,4 +1,5 @@
 #include "main.h"
+#include "./include/curl-go.h"
 #include "./oauth/oauth.c"
 #include "./include/json-parser.h"
 #include "./include/a1-notation.h"
@@ -13,7 +14,7 @@ char *spreadsheets_values_read(char *spreadsheet_id, char *range) {
 
     makestr(header, "Authorization: Bearer %s", oauth_access());
     
-    r = hget_method("GET", url, "", &code, header);
+    r = curl_go("GET", url, "", &code, header);
 
     if (code == 401)
     {
@@ -87,7 +88,7 @@ void spreadsheets_values_write(char *spreadsheet_id, char *range, size_t count, 
     "}",
     range, arr);
 
-    r = get(url, data, &code, header, "Content-Type: application/json");
+    r = curl_go("POST", url, data, &code, header, "Content-Type: application/json");
 
     if (code == 401)
     {
@@ -127,7 +128,7 @@ void spreadsheets_values_clear(char *spreadsheet_id, char *range) {
 
     makestr(data, "{\\\"ranges\\\":[\\\"%s\\\"]}", range);
 
-    r = get(url, data, &code, header, "Content-Type: application/json");
+    r = curl_go("POST", url, data, &code, header, "Content-Type: application/json");
 
     if (code != 200)
     {
@@ -197,7 +198,7 @@ void spreadsheets_values_append(char *spreadsheet_id, char *range, size_t count,
     "}",
     range, arr);
 
-    r = get(url, data, &code, header, "Content-Type: application/json");
+    r = curl_go("POST", url, data, &code, header, "Content-Type: application/json");
 
     if (code == 401)
     {
@@ -255,7 +256,7 @@ void spreadsheets_sheets_create(char *spreadsheet_id, char *name, char *width, c
     "}",
     name, width, height);
 
-    r = get(url, data, &code, header, "Content-Type: application/json");
+    r = curl_go("POST", url, data, &code, header, "Content-Type: application/json");
 
     if (code == 401)
     {
@@ -299,7 +300,7 @@ void spreadsheets_sheets_delete(char *spreadsheet_id, char *sheets_id) {
 	"}",
 	sheets_id);
 
-    r = get(url, data, &code, header, "Content-Type: application/json");
+    r = curl_go("POST", url, data, &code, header, "Content-Type: application/json");
 
     if (code == 401)
     {
@@ -349,7 +350,7 @@ void spreadsheets_sheets_edit_name(char *spreadsheet_id, char *sheets_id, char *
 	"}",
 	sheets_id, new_name);
 
-    r = get(url, data, &code, header, "Content-Type: application/json");
+    r = curl_go("POST", url, data, &code, header, "Content-Type: application/json");
 
     if (code == 401)
     {
@@ -385,7 +386,7 @@ void spreadsheets_sheets_copyTo(char *source_spreadsheet_id, char *source_sheet_
 
     makestr(data, "{\\\"destinationSpreadsheetId\\\":\\\"%s\\\"}", dest_spreadsheet_id);
 
-    r = get(url, data, &code, header, "Content-Type: application/json");
+    r = curl_go("POST", url, data, &code, header, "Content-Type: application/json");
 
     if (code == 401)
     {
@@ -440,7 +441,7 @@ char *spreadsheets_create(char *name, char *width, char *height) {
 	"}",
 	name, height, width);
 
-    r = get("https://sheets.googleapis.com/v4/spreadsheets", data, &code, header, "Content-Type: application/json");
+    r = curl_go("POST", "https://sheets.googleapis.com/v4/spreadsheets", data, &code, header, "Content-Type: application/json");
 
     if (code == 401)
     {
@@ -482,7 +483,7 @@ char *spreadsheets_get(char *spreadsheet_id) {
 
     makestr(header, "Authorization: Bearer %s", oauth_access());
     
-    r = hget_method("GET", url, "", &code, header);
+    r = curl_go("GET", url, "", &code, header);
 
     if (code == 401)
     {
@@ -507,9 +508,9 @@ char *spreadsheets_get(char *spreadsheet_id) {
 
 int main(void) {
 
-	oauth_credentials_set("client-id-here", "client-secret-here"); //grab at Google Cloud Console
-	
-	oauth_refresh_set("refresh-token-here");
+    oauth_credentials_set("client-id-here", "client-secret-here"); //grab at Google Cloud Console
+
+    oauth_refresh_set("refresh-token-here");
 
     char *r = spreadsheets_values_read("spreadsheet-id", "A1:B30");
 

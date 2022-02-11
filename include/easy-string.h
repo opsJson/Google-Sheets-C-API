@@ -7,26 +7,6 @@
 #include <stdlib.h>
 #include <stdarg.h>
 
-//////////////////////////////
-// MAKE STRING 
-////////////////////////
-size_t counter(char *str) {
-	size_t commas = 0;
-	int string = 0;
-	
-	while (*str) {
-		//escape commas inside string;
-		if (*str == '"' && *(str - 1) != '\\') string = !string;
-		
-		//count commas
-		if (string == 0)
-			if (*str == ',') commas++;
-		str++;
-	}
-	
-	return commas+1;
-}
-
 char* __countstr__(char *format, size_t count, ...) {
 	int i;
 	char *str;
