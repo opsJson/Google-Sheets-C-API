@@ -54,7 +54,7 @@ void spreadsheets_values_write(char *spreadsheet_id, char *range, size_t count, 
 
     //prepare data array
     arr = calloc(1, length +
-                (count * strlen("\\\"\\\",[]")) +
+                (count * strlen("\"\",[]")) +
                 + 1);
 
     va_start(args, count);
@@ -63,9 +63,9 @@ void spreadsheets_values_write(char *spreadsheet_id, char *range, size_t count, 
     {
         if (i > 0) strcat(arr, ",");
         strcat(arr, "[");
-        strcat(arr, "\\\"");
+        strcat(arr, "\"");
         strcat(arr, va_arg(args, char*));
-        strcat(arr, "\\\"");
+        strcat(arr, "\"");
         strcat(arr, "]");
     }
 
@@ -76,13 +76,13 @@ void spreadsheets_values_write(char *spreadsheet_id, char *range, size_t count, 
 
     makestr(data,
     "{"
-        "\\\"valueInputOption\\\":\\\"USER_ENTERED\\\","
-        "\\\"data\\\":"
+        "\"valueInputOption\":\"USER_ENTERED\","
+        "\"data\":"
             "["
                 "{"
-                    "\\\"range\\\":\\\"%s\\\","
-                    "\\\"majorDimension\\\":\\\"COLUMNS\\\","
-                    "\\\"values\\\":[%s]"
+                    "\"range\":\"%s\","
+                    "\"majorDimension\":\"COLUMNS\","
+                    "\"values\":[%s]"
                 "}"
             "]"
     "}",
@@ -126,7 +126,7 @@ void spreadsheets_values_clear(char *spreadsheet_id, char *range) {
 
     makestr(header, "Authorization: Bearer %s", oauth_access());
 
-    makestr(data, "{\\\"ranges\\\":[\\\"%s\\\"]}", range);
+    makestr(data, "{\"ranges\":[\"%s\"]}", range);
 
     r = curl_go("POST", url, data, &code, header, "Content-Type: application/json");
 
@@ -169,7 +169,7 @@ void spreadsheets_values_append(char *spreadsheet_id, char *range, size_t count,
 
     //prepare data array
     arr = calloc(1, length +
-                (count * strlen("\\\"\\\",[]")) +
+                (count * strlen("\"\",[]")) +
                 + 1);
 
     va_start(args, count);
@@ -178,9 +178,9 @@ void spreadsheets_values_append(char *spreadsheet_id, char *range, size_t count,
     {
         if (i > 0) strcat(arr, ",");
         strcat(arr, "[");
-        strcat(arr, "\\\"");
+        strcat(arr, "\"");
         strcat(arr, va_arg(args, char*));
-        strcat(arr, "\\\"");
+        strcat(arr, "\"");
         strcat(arr, "]");
     }
 
@@ -192,9 +192,9 @@ void spreadsheets_values_append(char *spreadsheet_id, char *range, size_t count,
 
     makestr(data,
     "{"
-        "\\\"range\\\":\\\"%s\\\","
-        "\\\"majorDimension\\\":\\\"COLUMNS\\\","
-        "\\\"values\\\":[%s]"
+        "\"range\":\"%s\","
+        "\"majorDimension\":\"COLUMNS\","
+        "\"values\":[%s]"
     "}",
     range, arr);
 
@@ -238,17 +238,17 @@ void spreadsheets_sheets_create(char *spreadsheet_id, char *name, char *width, c
 
     makestr(data,
     "{"
-        "\\\"requests\\\":"
+        "\"requests\":"
         "[{"
-            "\\\"addSheet\\\":"
+            "\"addSheet\":"
             "{"
-                "\\\"properties\\\":"
+                "\"properties\":"
                 "{"
-                    "\\\"title\\\":\\\"%s\\\","
-                    "\\\"gridProperties\\\":"
+                    "\"title\":\"%s\","
+                    "\"gridProperties\":"
                     "{"
-                        "\\\"columnCount\\\":%s,"
-                        "\\\"rowCount\\\":%s"
+                        "\"columnCount\":%s,"
+                        "\"rowCount\":%s"
                     "}"
                 "}"
             "}"
@@ -291,10 +291,10 @@ void spreadsheets_sheets_delete(char *spreadsheet_id, char *sheets_id) {
 
 	makestr(data,
 	"{"
-		"\\\"requests\\\":[{"
-			"\\\"deleteSheet\\\":"
+		"\"requests\":[{"
+			"\"deleteSheet\":"
 			"{"
-					"\\\"sheetId\\\":\\\"%s\\\""
+					"\"sheetId\":\"%s\""
 			"}"						
 		"}]"
 	"}",
@@ -336,15 +336,15 @@ void spreadsheets_sheets_edit_name(char *spreadsheet_id, char *sheets_id, char *
 
 	makestr(data,
 	"{"
-		"\\\"requests\\\":[{"
-			"\\\"updateSheetProperties\\\":"
+		"\"requests\":[{"
+			"\"updateSheetProperties\":"
 			"{"
-				"\\\"properties\\\":"
+				"\"properties\":"
 				"{"
-					"\\\"sheetId\\\":\\\"%s\\\""
-					",\\\"title\\\":\\\"%s\\\""
+					"\"sheetId\":\"%s\""
+					",\"title\":\"%s\""
 				"},"
-				"\\\"fields\\\":\\\"title\\\""
+				"\"fields\":\"title\""
 			"}"						
 		"}]"
 	"}",
@@ -384,7 +384,7 @@ void spreadsheets_sheets_copyTo(char *source_spreadsheet_id, char *source_sheet_
 
     makestr(header, "Authorization: Bearer %s", oauth_access());
 
-    makestr(data, "{\\\"destinationSpreadsheetId\\\":\\\"%s\\\"}", dest_spreadsheet_id);
+    makestr(data, "{\"destinationSpreadsheetId\":\"%s\"}", dest_spreadsheet_id);
 
     r = curl_go("POST", url, data, &code, header, "Content-Type: application/json");
 
@@ -422,19 +422,19 @@ char *spreadsheets_create(char *name, char *width, char *height) {
 
   	makestr(data,
 	"{"
-		"\\\"properties\\\":"
+		"\"properties\":"
 		"{"
-			"\\\"title\\\":\\\"%s\\\",\\\"timeZone\\\":\\\"America/Sao_Paulo\\\""
+			"\"title\":\"%s\",\"timeZone\":\"America/Sao_Paulo\""
 		"}"
-		",\\\"sheets\\\":"
+		",\"sheets\":"
 		"[{"
-			"\\\"properties\\\":"
+			"\"properties\":"
 			"{"
-				"\\\"sheetId\\\":\\\"0\\\""
-				",\\\"gridProperties\\\":"
+				"\"sheetId\":\"0\""
+				",\"gridProperties\":"
 				"{"					
-					"\\\"rowCount\\\":\\\"%s\\\""
-					",\\\"columnCount\\\":\\\"%s\\\""
+					"\"rowCount\":\"%s\""
+					",\"columnCount\":\"%s\""
 				"}"
 			"}"			
 		"}]"
@@ -505,6 +505,11 @@ char *spreadsheets_get(char *spreadsheet_id) {
     return r;
 }
 
+/*///////////////////////////////////
+	
+		Testing:
+		
+///////////////////////////////////*/
 
 int main(void) {
 
